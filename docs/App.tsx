@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import AutoComplete from '../src/AutoComplete';
+import InlineAutoComplete from '../src/InlineAutoComplete';
 
 import '../src/styles/global.css';
 
@@ -57,6 +58,24 @@ export default function App() {
               Select an option from a predefined static list. Ideal for a
               scenario when the available options are limited and known.
             </p>
+          </div>
+          <h1>InlineAutoComplete</h1>
+          <div style={{ width: 300 }}>
+            <InlineAutoComplete
+              label="Auto Suggestion"
+              name="sample"
+              type="auto_suggestion"
+              required
+              desc="name"
+              async
+              isMultiple
+              descId="id"
+              placeholder="Auto Suggestion"
+              selectedItems={[{ name: 'test', id: '1' }]}
+              // data={[{ name: 'test', id: '1' }]}
+              getData={getData}
+              onChange={(value) => console.log(value, 'onchange')}
+            />
           </div>
           <div style={{ width: 300 }}>
             <AutoComplete
@@ -172,8 +191,9 @@ export default function App() {
               onChange={() => console.log('onchange')}
             />
           </div>
+          <h1>InlineAutoComplete</h1>
           <div style={{ width: 300 }}>
-            <AutoComplete
+            <InlineAutoComplete
               label="Auto Suggestion"
               name="sample"
               type="auto_suggestion"
