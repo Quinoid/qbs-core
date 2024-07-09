@@ -1,11 +1,4 @@
-import React, {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 
 import { AutoSuggestionInputProps } from './commontypes';
@@ -246,8 +239,20 @@ const InlineAutoComplete = forwardRef<
         }
       };
       document.addEventListener('mousedown', handleClickOutside as any);
+      window.addEventListener('scroll', handleClickOutside as any);
+
+      const scrollableDivs = document.querySelectorAll(
+        'div[style*="overflow"]'
+      );
+      scrollableDivs.forEach((div) =>
+        div.addEventListener('scroll', handleClickOutside as any)
+      );
       return () => {
         document.removeEventListener('mousedown', handleClickOutside as any);
+        scrollableDivs.forEach((div) =>
+          div.removeEventListener('scroll', handleClickOutside as any)
+        );
+        window.addEventListener('scroll', handleClickOutside as any);
       };
     }, []);
     useEffect(() => {
@@ -432,7 +437,7 @@ const InlineAutoComplete = forwardRef<
             ReactDOM.createPortal(
               <ul
                 ref={dropRef}
-                style={dropdownStyle}
+                style={{ ...dropdownStyle, minHeight: 192 }}
                 className={`qbs-autocomplete-suggestions`}
               >
                 {type == 'auto_suggestion' && (
