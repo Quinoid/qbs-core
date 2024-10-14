@@ -36,4 +36,6 @@ export interface AutoSuggestionInputProps {
   onFocus?: (e: React.FocusEvent<HTMLInputElement, Element>) => void;
   dopDownRef?: HTMLInputElement;
   hideClose?: boolean;
+  selectAllLabel?: string;
+  selectAll?: boolean;
 }

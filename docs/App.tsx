@@ -216,7 +216,7 @@ export default function App() {
               type="auto_suggestion"
               // async
               desc="name"
-              singleSelect
+              isMultiple
               descId="id"
               paginationEnabled={false}
               initialLoad={true}

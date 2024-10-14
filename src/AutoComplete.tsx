@@ -1,4 +1,11 @@
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 
 import { AutoSuggestionInputProps } from './commontypes';
 import { useSuggestions } from './utilities/autosuggestions';
@@ -42,6 +49,8 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
       nextBlock,
       notDataMessage,
       onFocus,
+      selectAllLabel,
+      selectAll,
     },
     ref
   ) => {
@@ -259,6 +268,23 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
             .join(', ')
         : '';
 
+    const handleSelctAll = (e?: any) => {
+      const { checked } = e.target;
+      if (checked) {
+        setSelectedItems([...filteredData]);
+      } else {
+        setSelectedItems([]);
+      }
+    };
+    const arraysAreEqual = () => {
+      // Check if every object in filteredData is in selectedItems
+      return filteredData.every((filteredItem) =>
+        selectedItems.some(
+          (selectedItem) =>
+            JSON.stringify(filteredItem) === JSON.stringify(selectedItem)
+        )
+      );
+    };
     return (
       <div className={fullWidth ? 'fullWidth' : 'autoWidth'} ref={dropdownRef}>
         {label && (
@@ -388,6 +414,46 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
               </div>
 
               {/* )} */}
+                {selectAll && isMultiple && (
+                  <div
+                    className={`qbs-autocomplete-listitem-container ${
+                      (isMultiple || singleSelect) &&
+                      'qbs-autocomplete-checkbox-container'
+                    } ${arraysAreEqual() ? 'is-selected' : ''}`}
+                  >
+                    {(isMultiple || singleSelect) && (
+                      <div className="qbs-autocomplete-checkbox">
+                        <input
+                          onChange={(e) => handleSelctAll(e)}
+                          type="checkbox"
+                          checked={arraysAreEqual()}
+                          id={`qbs-checkbox-selectAll`}
+                        />
+                        <label htmlFor={`qbs-checkbox-selectAll`}>
+                          <svg
+                            width="8"
+                            height="6"
+                            viewBox="0 0 8 6"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M0 3.21739L2.89883 6L8 1.06994L6.89494 0L2.89883 3.86768L1.09728 2.14745L0 3.21739Z"
+                              fill="white"
+                            />
+                          </svg>
+                        </label>
+                      </div>
+                    )}
+                    <li
+                      className={`qbs-autocomplete-suggestions-item ${
+                        arraysAreEqual() ? 'is-selected' : ''
+                      }`}
+                    >
+                      {selectAllLabel ?? 'Select All'}
+                    </li>
+                  </div>
+                )}
 
                 {filteredData?.length > 0 ? (
                   filteredData.map((suggestion: ValueProps, idx: number) => (

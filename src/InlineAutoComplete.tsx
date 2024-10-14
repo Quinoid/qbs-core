@@ -1,4 +1,11 @@
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import ReactDOM from 'react-dom';
 
 import { AutoSuggestionInputProps } from './commontypes';
@@ -437,7 +444,7 @@ const InlineAutoComplete = forwardRef<
             ReactDOM.createPortal(
               <ul
                 ref={dropRef}
-                style={{ ...dropdownStyle, minHeight: 192 }}
+                style={{ ...dropdownStyle, minHeight: 240 }}
                 className={`qbs-autocomplete-suggestions`}
               >
                 {type == 'auto_suggestion' && (
