@@ -1,11 +1,4 @@
-import React, {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 import { AutoSuggestionInputProps } from './commontypes';
 import { useSuggestions } from './utilities/autosuggestions';
@@ -14,13 +7,13 @@ import { deepEqual } from './utilities/deepEqual';
 import { filterSuggestions } from './utilities/filterSuggestions';
 import { Close, DropArrow, Search, Spinner } from './utilities/icons';
 import Tooltip from './utilities/tootltip';
-
-type ValueProps = {
-  [key: string]: string;
-};
-const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
-  (
-    {
+import { AutoSuggestionInputProps } from './commontypes';
+import { useSuggestions } from './utilities/autosuggestions';
+import { debounce } from './utilities/debounce';
+import { deepEqual } from './utilities/deepEqual';
+import { filterSuggestions } from './utilities/filterSuggestions';
+import { Close, DropArrow, Search, Spinner } from './utilities/icons';
+import Tooltip from './utilities/tootltip';
       label,
       onChange,
       getData = async () => [],
@@ -51,6 +44,8 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
       onFocus,
       selectAllLabel,
       selectAll,
+      handleSearchValueChange,
+      viewSearchInput = true,
     },
     ref
   ) => {
@@ -93,7 +88,12 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
       };
     }, [dropOpen]);
 
-    const { suggestions, isLoading, handlePickSuggestions } = useSuggestions(
+    const {
+      suggestions,
+      isLoading,
+      handlePickSuggestions,
+      handleSearch: handleCustomSearch,
+    } = useSuggestions(
       getData,
       data,
       dropOpen,
@@ -124,6 +124,8 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
     const handleChangeWithDebounce = debounce((value) => {
       if ((type === 'auto_complete' || type === 'auto_suggestion') && async) {
         handlePickSuggestions(value, 1);
+      } else if (type === 'custom_search_select') {
+        handleCustomSearch(value);
       }
     }, 1000);
 
@@ -159,6 +161,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const { value } = e.target;
+      handleSearchValueChange(value);
       setDropOpen(true);
       setSearchValue(value);
       handleChangeWithDebounce(value);
@@ -242,7 +245,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
       selectedItems: ValueProps[] | string
     ): boolean => {
       if (Array.isArray(selectedItems)) {
-        return selectedItems.some(
+        return selectedItems?.some(
           (selectedItem) => selectedItem[desc] === item[desc]
         );
       } else {
@@ -260,14 +263,21 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
     const handleOnClick = () => {
       !disabled && !readOnly ? setDropOpen(true) : '';
     };
-    const tooltipContent =
-      selectedItems?.length > 1
-        ? selectedItems
-            ?.slice(1)
-            .map((item) => item[desc])
-            .join(', ')
-        : '';
 
+    const handleTooltip = () => {
+      if (selectedItems?.length > 1) {
+        const tooltipContent =
+          selectedItems?.length > 1
+            ? selectedItems
+                ?.slice(1)
+                .map((item) => item[desc])
+                .join(', ')
+            : '';
+        return '';
+      } else {
+        return '';
+      }
+    };
     const handleSelctAll = (e?: any) => {
       const { checked } = e.target;
       if (checked) {
@@ -324,7 +334,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
                     X
                   </button>
                 </div>
-                <Tooltip title={tooltipContent}>
+                <Tooltip title={handleTooltip()}>
                   {selectedItems?.length > 1 && (
                     <div className="selected-item-more">
                       +{selectedItems?.length - 1} more
@@ -387,7 +397,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
               ref={dropRef}
               className={`qbs-autocomplete-suggestions ${dropdownPosition}`}
             >
-              {type == 'auto_suggestion' && (
+              {type == 'auto_suggestion' && viewSearchInput && (
                 <div
                   style={{ position: 'relative' }}
                   className="qbs-core-search-container"
@@ -414,9 +424,9 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
               </div>
 
               {/* )} */}
-                {selectAll && isMultiple && (
+                {selectAll && isMultiple && filteredData?.length > 0 && (
                   <div
-                    className={`qbs-autocomplete-listitem-container ${
+                    className={`qbs-autocomplete-listitem-container qbs-autocomplete-selectall-container ${
                       (isMultiple || singleSelect) &&
                       'qbs-autocomplete-checkbox-container'
                     } ${arraysAreEqual() ? 'is-selected' : ''}`}

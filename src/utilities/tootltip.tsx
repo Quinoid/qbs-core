@@ -1,5 +1,5 @@
 // import React from 'react';
-// const Tooltip: React.FC<any> = ({ children, title }) => {
+// const Tooltip: React.FC<any> = ({ useRef, useState }) => {
 //   return (
 //     <div className="tooltip-wrapper">
 //       {children}
@@ -9,7 +9,7 @@
 // };
 
 // export default Tooltip;
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 
 const ToolTip: React.FC<any> = ({ title, children }) => {
   const [dropdownPosition, setDropdownPosition] = useState('bottom-position');
@@ -22,7 +22,6 @@ const ToolTip: React.FC<any> = ({ title, children }) => {
 
       const spaceAbove = inputBoxRect.top;
       const spaceBelow = viewportHeight - inputBoxRect.bottom;
-      console.log(spaceAbove, spaceBelow);
       if (spaceAbove > spaceBelow) {
         if (spaceAbove > 90 && spaceBelow < 120) {
           setDropdownPosition('top-position');
@@ -53,8 +52,8 @@ const ToolTip: React.FC<any> = ({ title, children }) => {
       >
         {children}
       </span>
-      <span ref={dropRef} className={`tooltiptext `}>
-        {title}
+      <span ref={dropRef} className={`tooltiptext custom-tooltip-class `}>
+        <span> {title}</span>
       </span>
     </div>
   );

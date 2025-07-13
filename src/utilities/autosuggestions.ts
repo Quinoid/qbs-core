@@ -14,10 +14,12 @@ type UseSuggestionsType = (
   inputValue?: string,
   isMultiple?: boolean,
   setNextPage?: (value: number) => void,
-  selectedItems?: any[]
+  selectedItems?: any[],
+  desc?: string
 ) => {
   suggestions: ValueProps[];
   isLoading: boolean;
+  handleSearch: (value: string) => ValueProps[];
 
   handlePickSuggestions: (
     value?: string,
@@ -36,7 +38,8 @@ export const useSuggestions: UseSuggestionsType = (
   inputValue = '',
   isMultiple,
   setNextPage,
-  selectedItems = []
+  selectedItems = [],
+  desc
 ) => {
   const [suggestions, setSuggestions] = useState<ValueProps[]>(initialData);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -62,6 +65,11 @@ export const useSuggestions: UseSuggestionsType = (
       setIsLoading(false);
     }
   };
+  const handleSearch = (value: string) => {
+    return suggestions?.filter((item) =>
+      item[desc].toLowerCase().includes(value.toLowerCase())
+    );
+  };
 
   useEffect(() => {
     if (dropOpen) {
@@ -79,5 +87,5 @@ export const useSuggestions: UseSuggestionsType = (
     }
   }, [dropOpen]);
 
-  return { suggestions, isLoading, handlePickSuggestions };
+  return { suggestions, isLoading, handlePickSuggestions, handleSearch };
 };

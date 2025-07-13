@@ -38,4 +38,6 @@ export interface AutoSuggestionInputProps {
   hideClose?: boolean;
   selectAllLabel?: string;
   selectAll?: boolean;
+  handleSearchValueChange?: (value?: string) => void;
+  viewSearchInput?: boolean;
 }

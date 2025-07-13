@@ -467,7 +467,7 @@ span.dropdown-search-icon {
 }
 
 .qbs-table-tooltip .tooltiptext {
-  visibility: hidden;
+  visibility: visible;
   background-color: #000;
   color: #fff;
   text-align: center;
@@ -480,6 +480,7 @@ span.dropdown-search-icon {
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
+
   line-height: 16px;
   max-width: 300px;
 }
@@ -519,4 +520,11 @@ span.dropdown-search-icon {
   left: 50%;
   margin-left: -5px;
   border-color: transparent transparent #000 transparent;
+}
+.qbs-autocomplete-selectall-container {
+  border-bottom: 1px solid #eae6e6;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: white;
 }
