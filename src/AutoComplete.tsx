@@ -1,4 +1,11 @@
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 
 import { AutoSuggestionInputProps } from './commontypes';
 import { useSuggestions } from './utilities/autosuggestions';
@@ -7,13 +14,13 @@ import { deepEqual } from './utilities/deepEqual';
 import { filterSuggestions } from './utilities/filterSuggestions';
 import { Close, DropArrow, Search, Spinner } from './utilities/icons';
 import Tooltip from './utilities/tootltip';
-import { AutoSuggestionInputProps } from './commontypes';
-import { useSuggestions } from './utilities/autosuggestions';
-import { debounce } from './utilities/debounce';
-import { deepEqual } from './utilities/deepEqual';
-import { filterSuggestions } from './utilities/filterSuggestions';
-import { Close, DropArrow, Search, Spinner } from './utilities/icons';
-import Tooltip from './utilities/tootltip';
+
+type ValueProps = {
+  [key: string]: string;
+};
+const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
+  (
+    {
       label,
       onChange,
       getData = async () => [],
@@ -52,6 +59,7 @@ import Tooltip from './utilities/tootltip';
     const dropdownRef = useRef<HTMLDivElement>(null);
     // State Hooks Section
     const [isInitialRender, setIsInitialRender] = useState(true);
+    const isFromPropsUpdate = useRef(false);
 
     const [inputValue, setInputValue] = useState<string>(value);
     const [searchValue, setSearchValue] = useState<string>('');
@@ -206,12 +214,36 @@ import Tooltip from './utilities/tootltip';
     };
 
     useEffect(() => {
+      if (!deepEqual(selectedItems, propsSeelctedItems)) {
+        isFromPropsUpdate.current = true;
+        setSelectedItems(propsSeelctedItems);
+      }
+    }, [propsSeelctedItems]);
+
+    useEffect(() => {
       if (isInitialRender) {
         setIsInitialRender(false);
-      } else {
-        onChange(selectedItems);
+        return;
       }
+
+      if (isFromPropsUpdate.current) {
+        isFromPropsUpdate.current = false;
+        return;
+      }
+
+      onChange(selectedItems);
     }, [selectedItems]);
+    // useEffect(() => {
+    //   if (isInitialRender) {
+    //     setIsInitialRender(false);
+    //   } else {
+    //     onChange(selectedItems);
+    //   }
+    // }, [selectedItems]);
+    // useEffect(() => {
+    //   if (!deepEqual(selectedItems, propsSeelctedItems))
+    //     setSelectedItems(propsSeelctedItems);
+    // }, [propsSeelctedItems]);
 
     useEffect(() => {
       const handleClickOutside = (event: React.MouseEvent) => {
@@ -273,7 +305,7 @@ import Tooltip from './utilities/tootltip';
                 .map((item) => item[desc])
                 .join(', ')
             : '';
-        return '';
+        return tooltipContent;
       } else {
         return '';
       }
