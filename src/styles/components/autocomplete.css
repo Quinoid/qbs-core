@@ -103,7 +103,7 @@ body * {
   margin-top: 4px;
   margin-bottom: 0;
   border-radius: 8px;
-  background: #fff;
+  background: var(--qbs-ac-menu-bg, #fff);
   box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.15);
 }
 .qbs-autocomplete-suggestions.bottom {
@@ -119,7 +119,7 @@ body * {
   cursor: pointer;
   padding: 6px 8px;
   border-radius: 6px;
-  color: #222;
+  color: var(--qbs-ac-item-text, #222);
   font-size: 14px;
   font-weight: 500;
   line-height: 20px; /* 142.857% */
@@ -129,14 +129,14 @@ body * {
   gap: 8px;
 }
 .qbs-autocomplete-suggestions-item:hover {
-  background: #f8f8f8;
+  background: var(--qbs-ac-item-hover-bg, #f8f8f8);
   border-radius: 6px;
 }
 
 /* When value.id is equal to suggestion.id */
 .is-selected {
   border-radius: 6px;
-  background: var(--neutrals-grey-20, #f4f4f4);
+  background: var(--qbs-ac-item-selected-bg, #f4f4f4);
 }
 
 /* When value.id is NOT equal to suggestion.id */
@@ -161,7 +161,7 @@ body * {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: white; /* bg-white */
+  background-color: var(--qbs-ac-input-bg, #fff);
 }
 .qbs-textfield-default {
   width: 100%;
@@ -171,14 +171,14 @@ body * {
   height: 36px;
   border-radius: 6px;
   padding-left: 8px;
-  border: 1px solid #d6d8dc;
-  background: #fff;
+  border: 1px solid var(--qbs-ac-input-border, #d6d8dc);
+  background: var(--qbs-ac-input-bg, #fff);
   box-sizing: border-box;
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
   line-height: 20px;
-  color: #313131;
+  color: var(--qbs-ac-input-text, #313131);
 }
 
 .qbs-textfield-default::placeholder {
@@ -213,8 +213,8 @@ body * {
   min-width: -webkit-fill-available;
   border-radius: 6px;
   border: 1px solid var(--border-card-color-default, #d6d8dc);
-  background: var(--surface-input-bg-color-default, #fff);
-  color: #313131;
+  background: var(--qbs-ac-input-bg, var(--surface-input-bg-color-default, #fff));
+  color: var(--qbs-ac-input-text, #313131);
   font-size: 14px;
   height: 36px;
   padding: 0px 8px;
@@ -341,7 +341,7 @@ ul {
 
 .qbs-autocomplete-suggestions-item.is-selected {
   color: #e76458;
-  background: #f8f8f8;
+  background: var(--qbs-ac-item-selected-bg, #f8f8f8);
 }
 
 span.dropdown-search-icon {
@@ -367,12 +367,12 @@ span.dropdown-search-icon {
 }
 
 .qbs-autocomplete-checkbox-container:hover {
-  background: #f8f8f8;
+  background: var(--qbs-ac-item-hover-bg, #f8f8f8);
   border-radius: 6px;
 }
 
 .qbs-autocomplete-checkbox-container.is-selected {
-  background: #f8f8f8;
+  background: var(--qbs-ac-item-selected-bg, #f8f8f8);
   border-radius: 6px;
 }
 
@@ -526,5 +526,5 @@ span.dropdown-search-icon {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: white;
+  background: var(--qbs-ac-sticky-header-bg, #fff);
 }
