@@ -53,6 +53,8 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
       selectAll,
       handleSearchValueChange,
       viewSearchInput = true,
+      hideClose = false,
+      maxCount,
     },
     ref
   ) => {
@@ -118,7 +120,12 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
     // Handling the selection of a suggestion
     const handleSuggestionClick = useCallback((suggestion: ValueProps) => {
       if (isMultiple) {
-        setSelectedItems((prev) => [...prev, suggestion]);
+        setSelectedItems((prev) => {
+          if (typeof maxCount === 'number' && prev.length >= maxCount) {
+            return prev;
+          }
+          return [...prev, suggestion];
+        });
       } else {
         setInputValue(suggestion[desc]);
       }
@@ -141,7 +148,12 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
       const { checked } = e.target;
       if (isMultiple) {
         if (checked) {
-          setSelectedItems((prev) => [...prev, suggestion]);
+          setSelectedItems((prev) => {
+            if (typeof maxCount === 'number' && prev.length >= maxCount) {
+              return prev;
+            }
+            return [...prev, suggestion];
+          });
         } else {
           setSelectedItems((prev) => {
             return prev.filter(
@@ -169,7 +181,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const { value } = e.target;
-      handleSearchValueChange(value);
+      handleSearchValueChange?.(value);
       setDropOpen(true);
       setSearchValue(value);
       handleChangeWithDebounce(value);
@@ -205,6 +217,10 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
     const generateClassName = useCallback(() => {
       return `qbs-textfield-default ${className} ${
         errors && errors?.message ? 'textfield-error' : 'textfield'
+      } ${
+        type === 'custom_search_select' || type === 'auto_complete'
+          ? 'custom-editable-input'
+          : ''
       }`;
     }, [errors, name]);
     const handleRemoveSelectedItem = (index: number) => {
@@ -313,7 +329,11 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
     const handleSelctAll = (e?: any) => {
       const { checked } = e.target;
       if (checked) {
-        setSelectedItems([...filteredData]);
+        if (typeof maxCount === 'number') {
+          setSelectedItems([...filteredData.slice(0, maxCount)]);
+        } else {
+          setSelectedItems([...filteredData]);
+        }
       } else {
         setSelectedItems([]);
       }
@@ -358,13 +378,15 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
                       ? `${selectedItems[0]?.[desc].substring(0, 8)}...`
                       : selectedItems[0]?.[desc]}
                   </Tooltip>
-                  <button
-                    onClick={() => handleRemoveSelectedItem(0)}
-                    className="remove-item-btn"
-                    aria-label={`Remove ${selectedItems[0]?.[desc]}`}
-                  >
-                    X
-                  </button>
+                  {!disabled && (
+                    <button
+                      onClick={() => handleRemoveSelectedItem(0)}
+                      className="remove-item-btn"
+                      aria-label={`Remove ${selectedItems[0]?.[desc]}`}
+                    >
+                      X
+                    </button>
+                  )}
                 </div>
                 <Tooltip title={handleTooltip()}>
                   {selectedItems?.length > 1 && (
@@ -400,15 +422,18 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
 
           {/* Icons for Clearing Input or Toggling Dropdown */}
           <div className="qbs-autocomplete-close-icon">
-            {(inputValue || searchValue) && !disabled && !readOnly && (
-              <button
-                onClick={handleClear}
-                className="icon-button"
-                aria-label="clear"
-              >
-                <Close />
-              </button>
-            )}
+            {(inputValue || searchValue) &&
+              !disabled &&
+              !readOnly &&
+              !hideClose && (
+                <button
+                  onClick={handleClear}
+                  className="icon-button"
+                  aria-label="clear"
+                >
+                  <Close />
+                </button>
+              )}
 
             <button
               disabled={disabled || readOnly}
@@ -442,6 +467,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoSuggestionInputProps>(
                     onChange={handleSuggestionChange}
                     value={searchValue}
                     placeholder="Search"
+                    autoFocus={true}
                   />
                 </div>
               )}

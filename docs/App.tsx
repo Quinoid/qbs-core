@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import AutoComplete from '../src/AutoComplete';
 import InlineAutoComplete from '../src/InlineAutoComplete';
 
+// import 'qbs-core/dist/styles/global.css';
 import '../src/styles/global.css';
 
 export default function App() {

@@ -40,4 +40,5 @@ export interface AutoSuggestionInputProps {
   selectAll?: boolean;
   handleSearchValueChange?: (value?: string) => void;
   viewSearchInput?: boolean;
+  maxCount?: number;
 }

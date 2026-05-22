@@ -54,6 +54,7 @@ const InlineAutoComplete = forwardRef<
       notDataMessage,
       onFocus,
       hideClose,
+      maxCount,
     },
     ref
   ) => {
@@ -134,7 +135,12 @@ const InlineAutoComplete = forwardRef<
     // Handling the selection of a suggestion
     const handleSuggestionClick = useCallback((suggestion: ValueProps) => {
       if (isMultiple) {
-        setSelectedItems((prev) => [...prev, suggestion]);
+        setSelectedItems((prev) => {
+          if (typeof maxCount === 'number' && prev.length >= maxCount) {
+            return prev;
+          }
+          return [...prev, suggestion];
+        });
       } else {
         setInputValue(suggestion[desc]);
       }
@@ -155,7 +161,12 @@ const InlineAutoComplete = forwardRef<
       const { checked } = e.target;
       if (isMultiple) {
         if (checked) {
-          setSelectedItems((prev) => [...prev, suggestion]);
+          setSelectedItems((prev) => {
+            if (typeof maxCount === 'number' && prev.length >= maxCount) {
+              return prev;
+            }
+            return [...prev, suggestion];
+          });
         } else {
           setSelectedItems((prev) => {
             return prev.filter(
@@ -475,6 +486,64 @@ const InlineAutoComplete = forwardRef<
 
               {/* )} */}
 
+                  {isMultiple && filteredData?.length > 0 && (
+                    <div
+                      className={`qbs-autocomplete-listitem-container qbs-autocomplete-selectall-container ${
+                        (isMultiple || singleSelect) &&
+                        'qbs-autocomplete-checkbox-container'
+                      }`}
+                    >
+                      {(isMultiple || singleSelect) && (
+                        <div className="qbs-autocomplete-checkbox">
+                          <input
+                            onChange={(e) => {
+                              const { checked } = e.target;
+                              if (checked) {
+                                if (typeof maxCount === 'number') {
+                                  setSelectedItems([
+                                    ...filteredData.slice(0, maxCount),
+                                  ]);
+                                } else {
+                                  setSelectedItems([...filteredData]);
+                                }
+                              } else {
+                                setSelectedItems([]);
+                              }
+                            }}
+                            type="checkbox"
+                            checked={
+                              filteredData.length > 0 &&
+                              filteredData.every((filteredItem) =>
+                                selectedItems.some(
+                                  (selectedItem) =>
+                                    JSON.stringify(filteredItem) ===
+                                    JSON.stringify(selectedItem)
+                                )
+                              )
+                            }
+                            id={`qbs-checkbox-inline-selectAll`}
+                          />
+                          <label htmlFor={`qbs-checkbox-inline-selectAll`}>
+                            <svg
+                              width="8"
+                              height="6"
+                              viewBox="0 0 8 6"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M0 3.21739L2.89883 6L8 1.06994L6.89494 0L2.89883 3.86768L1.09728 2.14745L0 3.21739Z"
+                                fill="white"
+                              />
+                            </svg>
+                          </label>
+                        </div>
+                      )}
+                      <li className={`qbs-autocomplete-suggestions-item`}>
+                        Select All
+                      </li>
+                    </div>
+                  )}
                   {filteredData?.length > 0 ? (
                     filteredData.map((suggestion: ValueProps, idx: number) => (
                       <div
